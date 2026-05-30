@@ -4,83 +4,70 @@ require("dotenv").config()
 
 const app = express()
 
+// Middleware
 app.use(cors())
 app.use(express.json())
 
-app.use("/api/auth", require("./routes/authRoutes"))
+// Routes
+app.use(
+  "/api/auth",
+  require("./routes/authRoutes")
+)
 
 app.use(
   "/api/appointments",
   require("./routes/appointmentRoutes")
 )
 
-const PORT = process.env.PORT || 5000
-
-app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`)
-})
-
 app.use(
   "/api/history",
   require("./routes/historyRoutes")
 )
 
-const adminRoutes =
-require("./routes/adminRoutes")
-
 app.use(
   "/api/admin",
-  adminRoutes
+  require("./routes/adminRoutes")
 )
-const medicalRoutes =
-require("./routes/medicalRoutes")
 
 app.use(
   "/api/medical",
-  medicalRoutes
+  require("./routes/medicalRoutes")
 )
-
-const doctorRoutes =
-require("./routes/doctorRoutes")
 
 app.use(
   "/api/doctor",
-  doctorRoutes
+  require("./routes/doctorRoutes")
 )
-
-const appointmentRoutes =
-require("./routes/appointmentRoutes")
-
-app.use(
-  "/api/appointments",
-  appointmentRoutes
-)
-
-const reportRoutes =
-require("./routes/reportRoutes")
 
 app.use(
   "/api/reports",
-  reportRoutes
+  require("./routes/reportRoutes")
 )
 
+app.use(
+  "/api/tests",
+  require("./routes/testRoutes")
+)
+
+app.use(
+  "/api/payment",
+  require("./routes/paymentRoutes")
+)
+
+// Static folder for uploaded reports
 app.use(
   "/uploads",
   express.static("uploads")
 )
 
-const testRoutes =
-require("./routes/testRoutes")
+// Health Check Route
+app.get("/", (req, res) => {
+  res.send("AI Hospital Backend Running 🚀")
+})
 
-app.use(
-  "/api/tests",
-  testRoutes
-)
+// Start Server
+const PORT = process.env.PORT || 5000
 
-const paymentRoutes =
-require("./routes/paymentRoutes")
-
-app.use(
-  "/api/payment",
-  paymentRoutes
-)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
