@@ -71,13 +71,13 @@ function ViewReports() {
               </p>
 
               <a
-                href={`http://localhost:5000${report.file_url}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block mt-4 px-6 py-3 bg-cyan-600 rounded-xl"
-              >
-                View Report
-              </a>
+  href={`https://smart-hospital-management-system-bqw6.onrender.com${report.file_url}`}
+  target="_blank"
+  rel="noreferrer"
+  className="inline-block mt-4 px-6 py-3 bg-cyan-600 rounded-xl"
+>
+  View Report
+</a>
 
             </div>
 

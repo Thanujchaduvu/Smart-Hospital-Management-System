@@ -57,13 +57,13 @@ function Reports() {
               </p>
 
               <a
-                href={`http://localhost:5000${report.file_url}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-cyan-400"
-              >
-                View Report
-              </a>
+  href={`https://smart-hospital-management-system-bqw6.onrender.com${report.file_url}`}
+  target="_blank"
+  rel="noreferrer"
+  className="text-cyan-400"
+>
+  View Report
+</a>
 
             </div>
 
