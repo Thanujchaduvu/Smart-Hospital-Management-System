@@ -33,7 +33,7 @@ export default function PharmacyStaff() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/pharmacy-staff",
+        "${import.meta.env.VITE_API_URL}/api/pharmacy-staff",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ export default function PharmacyStaff() {
 
         await axios.put(
 
-          `http://localhost:5000/api/pharmacy-staff/${editingId}`,
+          `${import.meta.env.VITE_API_URL}/api/pharmacy-staff/${editingId}`,
 
           formData,
 
@@ -95,7 +95,7 @@ export default function PharmacyStaff() {
 
         await axios.post(
 
-          "http://localhost:5000/api/pharmacy-staff",
+          "${import.meta.env.VITE_API_URL}/api/pharmacy-staff",
 
           formData,
 
@@ -172,7 +172,7 @@ export default function PharmacyStaff() {
 
       await axios.delete(
 
-        `http://localhost:5000/api/pharmacy-staff/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/pharmacy-staff/${id}`,
 
         {
           headers: {

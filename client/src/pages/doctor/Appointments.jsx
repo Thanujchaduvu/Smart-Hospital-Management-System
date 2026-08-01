@@ -16,7 +16,7 @@ export default function DoctorAppointments() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/doctor/appointments",
+        "${import.meta.env.VITE_API_URL}/api/doctor/appointments",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,7 +37,7 @@ export default function DoctorAppointments() {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:5000/api/doctor/appointments/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/doctor/appointments/${id}`,
         { status },
         {
           headers: {

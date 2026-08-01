@@ -37,7 +37,7 @@ export default function Notification() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/patient/notifications",
+        "${import.meta.env.VITE_API_URL}/api/patient/notifications",
         {
           headers: {
             Authorization: `Bearer ${token}`,

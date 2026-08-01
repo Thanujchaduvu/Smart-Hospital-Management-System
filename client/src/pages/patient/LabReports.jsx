@@ -39,7 +39,7 @@ export default function LabReports() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/patient/lab-reports",
+        "${import.meta.env.VITE_API_URL}/api/patient/lab-reports",
         {
           headers: {
             Authorization: `Bearer ${token}`,

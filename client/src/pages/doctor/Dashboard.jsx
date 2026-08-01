@@ -22,7 +22,7 @@ export default function DoctorDashboard() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/doctor/appointments",
+        "${import.meta.env.VITE_API_URL}/api/doctor/appointments",
         {
           headers: {
             Authorization: `Bearer ${token}`,

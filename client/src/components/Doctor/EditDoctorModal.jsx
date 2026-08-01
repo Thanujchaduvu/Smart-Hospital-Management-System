@@ -36,7 +36,7 @@ export default function EditDoctorModal({
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/admin/departments",
+        "${import.meta.env.VITE_API_URL}/api/admin/departments",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +62,7 @@ export default function EditDoctorModal({
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:5000/api/doctors/${doctor.id}`,
+        `${import.meta.env.VITE_API_URL}/api/doctors/${doctor.id}`,
         form,
         {
           headers: {

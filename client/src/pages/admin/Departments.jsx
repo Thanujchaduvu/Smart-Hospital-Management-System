@@ -30,7 +30,7 @@ export default function Departments() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/departments",
+        "${import.meta.env.VITE_API_URL}/api/departments",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export default function Departments() {
 
       if (editingId) {
         await axios.put(
-          `http://localhost:5000/api/departments/${editingId}`,
+          `${import.meta.env.VITE_API_URL}/api/departments/${editingId}`,
           { name, description },
           {
             headers: {
@@ -61,7 +61,7 @@ export default function Departments() {
         );
       } else {
         await axios.post(
-          "http://localhost:5000/api/departments",
+          "${import.meta.env.VITE_API_URL}/api/departments",
           { name, description },
           {
             headers: {
@@ -94,7 +94,7 @@ export default function Departments() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:5000/api/departments/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/departments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -33,7 +33,7 @@ export default function Billing() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/patient/bills",
+        "${import.meta.env.VITE_API_URL}/api/patient/bills",
         {
           headers: {
             Authorization: `Bearer ${token}`,

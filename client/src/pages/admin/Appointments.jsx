@@ -15,7 +15,7 @@ export default function Appointments() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/appointments",
+        "${import.meta.env.VITE_API_URL}/api/appointments",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,7 +36,7 @@ export default function Appointments() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:5000/api/appointments/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/appointments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

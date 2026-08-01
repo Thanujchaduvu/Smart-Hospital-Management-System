@@ -32,7 +32,7 @@ export default function LaboratoryStaff() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/laboratory-staff",
+        "${import.meta.env.VITE_API_URL}/api/laboratory-staff",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ export default function LaboratoryStaff() {
 
         await axios.put(
 
-          `http://localhost:5000/api/laboratory-staff/${editingId}`,
+          `${import.meta.env.VITE_API_URL}/api/laboratory-staff/${editingId}`,
 
           formData,
 
@@ -89,7 +89,7 @@ export default function LaboratoryStaff() {
 
         await axios.post(
 
-          "http://localhost:5000/api/laboratory-staff",
+          "${import.meta.env.VITE_API_URL}/api/laboratory-staff",
 
           formData,
 
@@ -166,7 +166,7 @@ export default function LaboratoryStaff() {
 
       await axios.delete(
 
-        `http://localhost:5000/api/laboratory-staff/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/laboratory-staff/${id}`,
 
         {
           headers: {

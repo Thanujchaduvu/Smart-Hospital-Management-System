@@ -40,7 +40,7 @@ export default function MyAppointments() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/patient/appointments",
+        "${import.meta.env.VITE_API_URL}/api/patient/appointments",
         {
           headers: {
             Authorization: `Bearer ${token}`,

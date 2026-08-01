@@ -20,7 +20,7 @@ export default function DoctorManagement() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/doctors",
+        "${import.meta.env.VITE_API_URL}/api/doctors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ export default function DoctorManagement() {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:5000/api/doctors/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/doctors/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
