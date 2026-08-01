@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Sidebar from "../../components/common/Sidebar";
 import Navbar from "../../components/common/Navbar";
-import EditDoctorModal from "../../components/doctor/EditDoctorModal";
+import EditDoctorModal from "../../components/Doctor/EditDoctorModal";
 
 export default function DoctorManagement() {
   const [doctors, setDoctors] = useState([]);
