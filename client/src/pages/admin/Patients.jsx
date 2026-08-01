@@ -1,175 +1,136 @@
-import { useEffect, useState } from "react"
-import API from "../../api/axios"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
 
-function Patients() {
-
-  const [patients, setPatients] =
-    useState([])
-
-  const fetchPatients = async () => {
-
-    try {
-
-      const res = await API.get(
-        "/admin/patients"
-      )
-
-      setPatients(res.data)
-
-    }
-
-    catch (err) {
-
-      console.log(err)
-
-    }
-
-  }
+export default function Patients() {
+  const [patients, setPatients] = useState([]);
 
   useEffect(() => {
+    fetchPatients();
+  }, []);
 
-    fetchPatients()
+  const fetchPatients = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-  }, [])
+      const res = await axios.get(
+        "http://localhost:5000/api/patients",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  const deletePatient = async (id) => {
+      setPatients(res.data);
+    } catch (err) {
+      console.error("Error fetching patients:", err);
+    }
+  };
+
+  const handleDelete = async (id, name) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${name}?`
+    );
+
+    if (!confirmDelete) return;
 
     try {
+      const token = localStorage.getItem("token");
 
-      await API.delete(
-        `/admin/patients/${id}`
-      )
+      await axios.delete(
+        `http://localhost:5000/api/patients/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      fetchPatients()
+      alert("Patient deleted successfully");
 
+      fetchPatients();
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.response?.data?.message ||
+          "Failed to delete patient"
+      );
     }
-
-    catch (err) {
-
-      console.log(err)
-
-    }
-
-  }
+  };
 
   return (
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar role="admin" />
 
-    <div className="min-h-screen bg-slate-950 text-white p-10">
+      <div className="flex-1">
+        <Navbar title="Patient Management" />
 
-      <div className="flex justify-between items-center mb-10">
+        <div className="p-6">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            Patient Management
+          </h2>
 
-        <div>
-
-          <h1 className="text-5xl font-bold">
-            Patients
-          </h1>
-
-          <p className="text-slate-400 mt-2">
-            Manage hospital patients
-          </p>
-
-        </div>
-
-        <input
-          type="text"
-          placeholder="Search patients..."
-          className="bg-slate-900 border border-slate-700 px-5 py-3 rounded-2xl outline-none"
-        />
-
-      </div>
-
-      <div className="overflow-hidden rounded-3xl border border-slate-800">
-
-        <table className="w-full">
-
-          <thead className="bg-slate-900">
-
-            <tr>
-
-              <th className="p-6 text-left">
-                ID
-              </th>
-
-              <th className="p-6 text-left">
-                Name
-              </th>
-
-              <th className="p-6 text-left">
-                Email
-              </th>
-
-              <th className="p-6 text-left">
-                Role
-              </th>
-
-              <th className="p-6 text-left">
-                Action
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {
-              patients.map((item) => (
-
-                <tr
-                  key={item.id}
-                  className="border-t border-slate-800 hover:bg-slate-900 transition"
-                >
-
-                  <td className="p-6">
-                    {item.id}
-                  </td>
-
-                  <td className="p-6 font-semibold">
-                    {item.name}
-                  </td>
-
-                  <td className="p-6 text-slate-300">
-                    {item.email}
-                  </td>
-
-                  <td className="p-6">
-
-                    <span className="px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400">
-
-                      {item.role}
-
-                    </span>
-
-                  </td>
-
-                  <td className="p-6">
-
-                    <button
-                      onClick={() =>
-                        deletePatient(item.id)
-                      }
-                      className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition"
-                    >
-                      Delete
-                    </button>
-
-                  </td>
-
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-slate-100">
+                <tr>
+                  <th className="p-4 text-left">Name</th>
+                  <th className="p-4 text-left">Email</th>
+                  <th className="p-4 text-left">Registered On</th>
+                  <th className="p-4 text-center">Actions</th>
                 </tr>
+              </thead>
 
-              ))
-            }
+              <tbody>
+                {patients.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      className="text-center py-8 text-gray-500"
+                    >
+                      No patients found.
+                    </td>
+                  </tr>
+                ) : (
+                  patients.map((patient) => (
+                    <tr
+                      key={patient.id}
+                      className="border-t hover:bg-gray-50"
+                    >
+                      <td className="p-4">{patient.name}</td>
 
-          </tbody>
+                      <td className="p-4">{patient.email}</td>
 
-        </table>
+                      <td className="p-4">
+                        {new Date(
+                          patient.created_at
+                        ).toLocaleDateString()}
+                      </td>
 
+                      <td className="p-4 text-center">
+                        <button
+                          onClick={() =>
+                            handleDelete(
+                              patient.id,
+                              patient.name
+                            )
+                          }
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                        >
+                          🗑 Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-
     </div>
-
-  )
-
+  );
 }
-
-export default Patients

@@ -1,182 +1,194 @@
-import { useEffect, useState }
-from "react"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
 
-import API
-from "../../api/axios"
-
-function Appointments() {
-
-  const [appointments,
-    setAppointments] =
-    useState([])
-
-  const fetchAppointments =
-    async () => {
-
-      try {
-
-        const res =
-          await API.get(
-            "/appointments"
-          )
-
-        setAppointments(
-          res.data
-        )
-
-      }
-
-      catch (err) {
-
-        console.log(err)
-
-      }
-
-    }
+export default function DoctorAppointments() {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchAppointments();
+  }, []);
 
-    fetchAppointments()
+  const fetchAppointments = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-  }, [])
+      const res = await axios.get(
+        "http://localhost:5000/api/doctor/appointments",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  const updateStatus =
-    async (id, status) => {
-
-      try {
-
-        await API.put(
-          `/appointments/${id}`,
-          { status }
-        )
-
-        fetchAppointments()
-
-      }
-
-      catch (err) {
-
-        console.log(err)
-
-      }
-
+      setAppointments(res.data.appointments || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        `http://localhost:5000/api/doctor/appointments/${id}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchAppointments();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar role="doctor" />
 
-    <div className="min-h-screen bg-slate-950 text-white p-10">
+      <div className="flex-1">
+        <Navbar title="Appointments" />
 
-      <h1 className="text-5xl font-bold mb-10">
-        Appointments
-      </h1>
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-6">
+            My Appointments
+          </h1>
 
-      <div className="overflow-hidden rounded-3xl border border-slate-800">
+          <div className="bg-white rounded-xl shadow overflow-hidden">
 
-        <table className="w-full">
+            <table className="w-full">
 
-          <thead className="bg-slate-900">
-
-            <tr>
-
-              <th className="p-5 text-left">
-                Patient
-              </th>
-
-              <th className="p-5 text-left">
-                Doctor
-              </th>
-
-              <th className="p-5 text-left">
-                Date
-              </th>
-
-              <th className="p-5 text-left">
-                Status
-              </th>
-
-              <th className="p-5 text-left">
-                Actions
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {
-              appointments.map((item) => (
-
-                <tr
-                  key={item.id}
-                  className="border-t border-slate-800"
-                >
-
-                  <td className="p-5">
-                    {item.patient_name}
-                  </td>
-
-                  <td className="p-5">
-                    {item.doctor_name}
-                  </td>
-
-                  <td className="p-5">
-                    {item.appointment_date}
-                  </td>
-
-                  <td className="p-5">
-
-                    <span className="px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400">
-
-                      {item.status}
-
-                    </span>
-
-                  </td>
-
-                  <td className="p-5 flex gap-3">
-
-                    <button
-                      onClick={() =>
-                        updateStatus(
-                          item.id,
-                          "Approved"
-                        )
-                      }
-                      className="px-4 py-2 bg-green-600 rounded-xl"
-                    >
-                      Approve
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        updateStatus(
-                          item.id,
-                          "Rejected"
-                        )
-                      }
-                      className="px-4 py-2 bg-red-600 rounded-xl"
-                    >
-                      Reject
-                    </button>
-
-                  </td>
-
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="p-4 text-left">Patient</th>
+                  <th className="p-4 text-left">Date</th>
+                  <th className="p-4 text-left">Time</th>
+                  <th className="p-4 text-left">Reason</th>
+                  <th className="p-4 text-left">Status</th>
+                  <th className="p-4 text-center">Actions</th>
                 </tr>
+              </thead>
 
-              ))
-            }
+              <tbody>
 
-          </tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="text-center p-6">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : appointments.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="text-center p-6">
+                      No Appointments Found
+                    </td>
+                  </tr>
+                ) : (
+                  appointments.map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="border-b hover:bg-gray-50"
+                    >
+                      <td className="p-4">
+                        {appointment.patient_name}
+                      </td>
 
-        </table>
+                      <td className="p-4">
+                        {appointment.appointment_date}
+                      </td>
 
+                      <td className="p-4">
+                        {appointment.appointment_time}
+                      </td>
+
+                      <td className="p-4">
+                        {appointment.reason}
+                      </td>
+
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm
+                          ${
+                            appointment.status === "Pending"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : appointment.status === "Confirmed"
+                              ? "bg-blue-100 text-blue-700"
+                              : appointment.status === "Completed"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </td>
+
+                      <td className="p-4 text-center">
+
+                        {appointment.status === "Pending" && (
+                          <>
+                            <button
+                              onClick={() =>
+                                updateStatus(
+                                  appointment.id,
+                                  "Confirmed"
+                                )
+                              }
+                              className="bg-green-600 text-white px-3 py-1 rounded mr-2"
+                            >
+                              Accept
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                updateStatus(
+                                  appointment.id,
+                                  "Rejected"
+                                )
+                              }
+                              className="bg-red-600 text-white px-3 py-1 rounded"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+
+                        {appointment.status === "Confirmed" && (
+                          <button
+                            onClick={() =>
+                              updateStatus(
+                                appointment.id,
+                                "Completed"
+                              )
+                            }
+                            className="bg-blue-600 text-white px-3 py-1 rounded"
+                          >
+                            Complete
+                          </button>
+                        )}
+
+                      </td>
+                    </tr>
+                  ))
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
       </div>
-
     </div>
-
-  )
-
+  );
 }
-
-export default Appointments

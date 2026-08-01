@@ -1,125 +1,165 @@
-import { useEffect, useState } from "react"
-import Sidebar from "../../components/Sidebar"
-import API from "../../api/axios"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
 
-function Appointments() {
-
-  const [appointments, setAppointments] = useState([])
-
-  const fetchAppointments = async () => {
-
-    try {
-
-      const res =
-        await API.get("/appointments")
-
-      setAppointments(res.data)
-
-    }
-
-    catch (err) {
-
-      console.log(err)
-
-    }
-
-  }
+export default function Appointments() {
+  const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
+    fetchAppointments();
+  }, []);
 
-    fetchAppointments()
+  const fetchAppointments = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-  }, [])
+      const res = await axios.get(
+        "http://localhost:5000/api/appointments",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAppointments(res.data);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this appointment?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(
+        `http://localhost:5000/api/appointments/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchAppointments();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete appointment");
+    }
+  };
 
   return (
-
-    <div className="flex min-h-screen bg-slate-950 text-white">
-
+    <div className="flex min-h-screen bg-gray-100">
       <Sidebar role="admin" />
 
-      <div className="flex-1 p-10">
+      <div className="flex-1">
+        <Navbar title="Appointment Management" />
 
-        <h1 className="text-5xl font-bold mb-10">
-          All Appointments
-        </h1>
+        <div className="p-6">
 
-        <div className="bg-slate-900 rounded-3xl overflow-hidden border border-slate-800">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold">
+              Appointment Management
+            </h2>
 
-          <table className="w-full">
+            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+              + New Appointment
+            </button>
+          </div>
 
-            <thead className="bg-slate-800">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
 
-              <tr>
+            <table className="w-full">
 
-                <th className="p-5 text-left">
-                  Patient
-                </th>
+              <thead className="bg-slate-100">
 
-                <th className="p-5 text-left">
-                  Doctor
-                </th>
+                <tr>
+                  <th className="p-4 text-left">Patient</th>
+                  <th className="p-4 text-left">Doctor</th>
+                  <th className="p-4 text-left">Department</th>
+                  <th className="p-4 text-left">Date</th>
+                  <th className="p-4 text-left">Time</th>
+                  <th className="p-4 text-left">Status</th>
+                  <th className="p-4 text-center">Actions</th>
+                </tr>
 
-                <th className="p-5 text-left">
-                  Date
-                </th>
+              </thead>
 
-                <th className="p-5 text-left">
-                  Status
-                </th>
+              <tbody>
 
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {
-                appointments.map((item) => (
-
-                  <tr
-                    key={item.id}
-                    className="border-t border-slate-800"
-                  >
-
-                    <td className="p-5">
-                      {item.patient_name}
+                {appointments.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center py-8 text-gray-500"
+                    >
+                      No appointments found.
                     </td>
-
-                    <td className="p-5">
-                      {item.doctor_name}
-                    </td>
-
-                    <td className="p-5">
-                      {item.appointment_date}
-                    </td>
-
-                    <td className="p-5">
-
-                      <span className="px-4 py-2 rounded-full bg-cyan-600">
-
-                        {item.status}
-
-                      </span>
-
-                    </td>
-
                   </tr>
+                ) : (
+                  appointments.map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="border-t hover:bg-gray-50"
+                    >
+                      <td className="p-4">
+                        {appointment.patient_name}
+                      </td>
 
-                ))
-              }
+                      <td className="p-4">
+                        {appointment.doctor_name}
+                      </td>
 
-            </tbody>
+                      <td className="p-4">
+                        {appointment.department}
+                      </td>
 
-          </table>
+                      <td className="p-4">
+                        {appointment.appointment_date}
+                      </td>
+
+                      <td className="p-4">
+                        {appointment.appointment_time}
+                      </td>
+
+                      <td className="p-4">
+                        <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">
+                          {appointment.status}
+                        </span>
+                      </td>
+
+                      <td className="p-4 text-center">
+
+                        <button className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 hover:bg-yellow-600">
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleDelete(appointment.id)
+                          }
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+
+                      </td>
+
+                    </tr>
+                  ))
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
 
         </div>
-
       </div>
-
     </div>
-
-  )
-
+  );
 }
-
-export default Appointments

@@ -1,196 +1,239 @@
-import { useEffect, useState }
-from "react"
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-import API
-from "../../api/axios"
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
 
-function BookAppointment() {
+export default function BookAppointment() {
+  const token = localStorage.getItem("token");
 
-  const [doctors,
-    setDoctors] =
-    useState([])
+  const [doctors, setDoctors] = useState([]);
+  const [departments, setDepartments] = useState([]);
 
-  const [formData,
-    setFormData] =
-    useState({
-
-      patient_name: "",
-      doctor_name: "",
-      appointment_date: ""
-
-    })
-
-  const handleChange =
-    (e) => {
-
-      setFormData({
-
-        ...formData,
-
-        [e.target.name]:
-          e.target.value
-
-      })
-
-    }
-
-  const fetchDoctors =
-    async () => {
-
-      try {
-
-        const res =
-          await API.get(
-            "/doctor/available"
-          )
-
-        setDoctors(
-          res.data
-        )
-
-      }
-
-      catch (err) {
-
-        console.log(err)
-
-      }
-
-    }
+  const [formData, setFormData] = useState({
+    doctor_id: "",
+    department_id: "",
+    appointment_date: "",
+    appointment_time: "",
+    reason: "",
+  });
 
   useEffect(() => {
+    fetchDoctors();
+    fetchDepartments();
+  }, []);
 
-    fetchDoctors()
+  const fetchDoctors = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/doctors",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  }, [])
-
-  const handleSubmit =
-    async (e) => {
-
-      e.preventDefault()
-
-      try {
-
-        const res =
-          await API.post(
-            "/appointments/book",
-            formData
-          )
-
-        alert(
-          res.data.message
-        )
-
-        setFormData({
-
-          patient_name: "",
-          doctor_name: "",
-          appointment_date: ""
-
-        })
-
-      }
-
-      catch (err) {
-
-        console.log(err)
-
-        alert(
-          "Booking Failed"
-        )
-
-      }
-
+      setDoctors(res.data.data || []);
+    } catch (err) {
+      console.error(err);
     }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/departments",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setDepartments(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const bookAppointment = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/appointments",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Appointment booked successfully!");
+
+      setFormData({
+        doctor_id: "",
+        department_id: "",
+        appointment_date: "",
+        appointment_time: "",
+        reason: "",
+      });
+
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.response?.data?.message ||
+        "Unable to book appointment."
+      );
+    }
+  };
 
   return (
+    <div className="flex min-h-screen bg-gray-100">
 
-    <div className="min-h-screen bg-slate-950 text-white p-10">
+      <Sidebar role="patient" />
 
-      <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-10 shadow-2xl">
+      <div className="flex-1">
 
-        <h1 className="text-5xl font-bold mb-3">
-          Book Appointment
-        </h1>
+        <Navbar title="Book Appointment" />
 
-        <p className="text-slate-400 mb-10">
-          Book appointments with available doctors
-        </p>
+        <div className="p-8">
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
+          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
 
-          <input
-            type="text"
-            name="patient_name"
-            placeholder="Patient Name"
-            value={
-              formData.patient_name
-            }
-            onChange={handleChange}
-            className="w-full p-5 rounded-2xl bg-slate-800 border border-slate-700 outline-none focus:border-cyan-500"
-          />
+            <h1 className="text-3xl font-bold mb-8">
+              Book Appointment
+            </h1>
 
-          <select
-            name="doctor_name"
-            value={
-              formData.doctor_name
-            }
-            onChange={handleChange}
-            className="w-full p-5 rounded-2xl bg-slate-800 border border-slate-700 outline-none focus:border-cyan-500"
-          >
+            <form
+              onSubmit={bookAppointment}
+              className="grid grid-cols-2 gap-6"
+            >
 
-            <option value="">
-              Select Available Doctor
-            </option>
+              <div>
+                <label className="block mb-2 font-medium">
+                  Department
+                </label>
 
-            {
-              doctors.map(
-                (doc, index) => (
-
-                <option
-                  key={index}
-                  value={doc.name}
+                <select
+                  name="department_id"
+                  value={formData.department_id}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-3"
                 >
+                  <option value="">Select Department</option>
 
-                  {doc.name}
-                  {" - "}
-                  {doc.specialization}
+                  {departments.map((dept) => (
+                    <option
+                      key={dept.id}
+                      value={dept.id}
+                    >
+                      {dept.department_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                </option>
+              <div>
+                <label className="block mb-2 font-medium">
+                  Doctor
+                </label>
 
-              ))
-            }
+                <select
+                  name="doctor_id"
+                  value={formData.doctor_id}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-3"
+                >
+                  <option value="">
+                    Select Doctor
+                  </option>
 
-          </select>
+                  {doctors.map((doctor) => (
+                    <option
+                      key={doctor.id}
+                      value={doctor.id}
+                    >
+                      {doctor.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <input
-            type="date"
-            name="appointment_date"
-            value={
-              formData.appointment_date
-            }
-            onChange={handleChange}
-            className="w-full p-5 rounded-2xl bg-slate-800 border border-slate-700 outline-none focus:border-cyan-500"
-          />
+              <div>
+                <label className="block mb-2 font-medium">
+                  Appointment Date
+                </label>
 
-          <button
-            type="submit"
-            className="w-full p-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-lg font-bold hover:scale-105 transition"
-          >
-            Book Appointment
-          </button>
+                <input
+                  type="date"
+                  name="appointment_date"
+                  value={formData.appointment_date}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-3"
+                />
+              </div>
 
-        </form>
+              <div>
+                <label className="block mb-2 font-medium">
+                  Appointment Time
+                </label>
+
+                <input
+                  type="time"
+                  name="appointment_time"
+                  value={formData.appointment_time}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-3"
+                />
+              </div>
+
+              <div className="col-span-2">
+
+                <label className="block mb-2 font-medium">
+                  Reason for Visit
+                </label>
+
+                <textarea
+                  rows="5"
+                  name="reason"
+                  value={formData.reason}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-3"
+                  placeholder="Describe your symptoms or reason for appointment..."
+                />
+
+              </div>
+
+              <div className="col-span-2">
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-semibold"
+                >
+                  Book Appointment
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
 
       </div>
 
     </div>
-
-  )
-
+  );
 }
-
-export default BookAppointment

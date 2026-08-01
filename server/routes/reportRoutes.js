@@ -1,66 +1,50 @@
-const express =
-require("express")
+const express = require("express");
+const router = express.Router();
 
-const router =
-express.Router()
-
-const multer =
-require("multer")
-
-const path =
-require("path")
+const { verifyToken } = require("../middleware/authMiddleware");
+const { verifyRole } = require("../middleware/roleMiddleware");
 
 const {
-
-  uploadReport,
-  getReports
-
-} = require(
-  "../controllers/reportController"
-)
-
-const storage =
-multer.diskStorage({
-
-  destination:
-  (req,file,cb) => {
-
-    cb(
-      null,
-      "uploads"
-    )
-
-  },
-
-  filename:
-  (req,file,cb) => {
-
-    cb(
-      null,
-      Date.now()
-      + "-"
-      + file.originalname
-    )
-
-  }
-
-})
-
-const upload =
-multer({
-  storage
-})
-
-router.post(
-  "/upload",
-  upload.single("report"),
-  uploadReport
-)
+  getSummary,
+  getStatusReport,
+  getDepartmentReport,
+  getMonthlyReport,
+  getRecentAppointments,
+} = require("../controllers/reportController");
 
 router.get(
-  "/",
-  getReports
-)
+  "/summary",
+  verifyToken,
+  verifyRole("admin"),
+  getSummary
+);
 
-module.exports =
-router
+router.get(
+  "/status",
+  verifyToken,
+  verifyRole("admin"),
+  getStatusReport
+);
+
+router.get(
+  "/departments",
+  verifyToken,
+  verifyRole("admin"),
+  getDepartmentReport
+);
+
+router.get(
+  "/monthly",
+  verifyToken,
+  verifyRole("admin"),
+  getMonthlyReport
+);
+
+router.get(
+  "/recent",
+  verifyToken,
+  verifyRole("admin"),
+  getRecentAppointments
+);
+
+module.exports = router;

@@ -1,39 +1,42 @@
-const express =
-require("express")
-
-const router =
-express.Router()
+const express = require("express");
+const router = express.Router();
 
 const {
-
-  bookAppointment,
   getAppointments,
+  createAppointment,
   updateAppointment,
-  payAppointment
+  deleteAppointment,
+} = require("../controllers/appointmentController");
 
-} = require(
-  "../controllers/appointmentController"
-)
-
-router.post(
-  "/book",
-  bookAppointment
-)
+const { verifyToken } = require("../middleware/authMiddleware");
+const { verifyRole } = require("../middleware/roleMiddleware");
 
 router.get(
   "/",
+  verifyToken,
+  verifyRole("admin"),
   getAppointments
-)
+);
+
+router.post(
+  "/",
+  verifyToken,
+  verifyRole("admin"),
+  createAppointment
+);
 
 router.put(
   "/:id",
+  verifyToken,
+  verifyRole("admin"),
   updateAppointment
-)
+);
 
-router.put(
-  "/pay/:id",
-  payAppointment
-)
+router.delete(
+  "/:id",
+  verifyToken,
+  verifyRole("admin"),
+  deleteAppointment
+);
 
-module.exports =
-router
+module.exports = router;

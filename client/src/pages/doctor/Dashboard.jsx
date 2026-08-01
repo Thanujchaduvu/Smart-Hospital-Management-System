@@ -1,267 +1,182 @@
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import Sidebar from "../../components/Sidebar"
-import API from "../../api/axios"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  User,
+} from "lucide-react";
 
-function Dashboard() {
-
-  const [available, setAvailable] = useState(true)
-  const [appointments, setAppointments] = useState([])
-
-  const email =
-    localStorage.getItem("doctorEmail")
-
-  const fetchAppointments = async () => {
-
-    try {
-
-      const res =
-        await API.get("/appointments")
-
-      setAppointments(res.data)
-
-    }
-
-    catch (err) {
-
-      console.log(err)
-
-    }
-
-  }
+export default function DoctorDashboard() {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchAppointments();
+  }, []);
 
-    fetchAppointments()
-
-  }, [])
-
-  const toggleAvailability = async () => {
-
+  const fetchAppointments = async () => {
     try {
+      const token = localStorage.getItem("token");
 
-      await API.put(
-        "/doctor/availability",
+      const res = await axios.get(
+        "http://localhost:5000/api/doctor/appointments",
         {
-          email,
-          isAvailable: !available
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      )
+      );
 
-      setAvailable(!available)
-
+      setAppointments(res.data.appointments || []);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    catch (err) {
+  const pending = appointments.filter(
+    (a) => a.status === "Pending"
+  ).length;
 
-      console.log(err)
+  const confirmed = appointments.filter(
+    (a) => a.status === "Confirmed"
+  ).length;
 
-    }
-
-  }
-
-  const approved =
-    appointments.filter(
-      item => item.status === "Approved"
-    ).length
-
-  const pending =
-    appointments.filter(
-      item => item.status === "Pending"
-    ).length
+  const completed = appointments.filter(
+    (a) => a.status === "Completed"
+  ).length;
 
   return (
-
-    <div className="flex bg-slate-950 text-white min-h-screen">
-
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
       <Sidebar role="doctor" />
 
-      <div className="flex-1 p-10">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <Navbar title="Doctor Dashboard" />
 
-        <div className="flex justify-between items-center mb-10">
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-8">
+            Welcome Doctor 👨‍⚕️
+          </h1>
 
-          <div>
+          {/* Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-            <h1 className="text-5xl font-bold">
-              Doctor Dashboard
-            </h1>
+            <div className="bg-white rounded-xl shadow p-6">
+              <Calendar className="text-blue-600 mb-3" size={30} />
+              <h2 className="text-3xl font-bold">
+                {appointments.length}
+              </h2>
+              <p className="text-gray-600">Total Appointments</p>
+            </div>
 
-            <p className="text-slate-400 mt-2">
-              Manage appointments, reports and patients
-            </p>
+            <div className="bg-white rounded-xl shadow p-6">
+              <Clock className="text-yellow-600 mb-3" size={30} />
+              <h2 className="text-3xl font-bold">
+                {pending}
+              </h2>
+              <p className="text-gray-600">Pending</p>
+            </div>
 
-          </div>
+            <div className="bg-white rounded-xl shadow p-6">
+              <User className="text-blue-500 mb-3" size={30} />
+              <h2 className="text-3xl font-bold">
+                {confirmed}
+              </h2>
+              <p className="text-gray-600">Confirmed</p>
+            </div>
 
-          <button
-            onClick={toggleAvailability}
-            className={`px-8 py-4 rounded-2xl font-bold text-lg transition ${
-              available
-                ? "bg-green-600"
-                : "bg-red-600"
-            }`}
-          >
-
-            {available
-              ? "🟢 ONLINE"
-              : "🔴 OFFLINE"}
-
-          </button>
-
-        </div>
-
-        {/* Stats */}
-
-        <div className="grid md:grid-cols-4 gap-6 mb-10">
-
-          <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800">
-
-            <h3 className="text-slate-400 mb-3">
-              Total Appointments
-            </h3>
-
-            <h1 className="text-5xl font-bold">
-              {appointments.length}
-            </h1>
-
-          </div>
-
-          <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800">
-
-            <h3 className="text-slate-400 mb-3">
-              Approved
-            </h3>
-
-            <h1 className="text-5xl font-bold text-green-400">
-              {approved}
-            </h1>
-
-          </div>
-
-          <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800">
-
-            <h3 className="text-slate-400 mb-3">
-              Pending
-            </h3>
-
-            <h1 className="text-5xl font-bold text-yellow-400">
-              {pending}
-            </h1>
-
-          </div>
-
-          <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800">
-
-            <h3 className="text-slate-400 mb-3">
-              Earnings
-            </h3>
-
-            <h1 className="text-5xl font-bold text-cyan-400">
-              ₹25K
-            </h1>
-
-          </div>
-
-        </div>
-
-        {/* Quick Actions */}
-
-        <div className="grid md:grid-cols-2 gap-8 mb-10">
-
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8">
-
-            <h2 className="text-3xl font-bold mb-6">
-              Quick Actions
-            </h2>
-
-            <div className="grid gap-4">
-
-              <Link
-                to="/doctor/appointments"
-                className="p-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-center font-bold"
-              >
-                Manage Appointments
-              </Link>
-
-              <Link
-                to="/doctor/history"
-                className="p-5 rounded-2xl bg-cyan-600 hover:bg-cyan-700 text-center font-bold"
-              >
-                Add Medical History
-              </Link>
-
-              <Link
-                to="/doctor/reports"
-                className="p-5 rounded-2xl bg-green-600 hover:bg-green-700 text-center font-bold"
-              >
-                View Patient Reports
-              </Link>
-
-              <Link
-                to="/patient/symptoms"
-                className="p-5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-center font-bold"
-              >
-                AI Symptom Checker
-              </Link>
-
+            <div className="bg-white rounded-xl shadow p-6">
+              <CheckCircle
+                className="text-green-600 mb-3"
+                size={30}
+              />
+              <h2 className="text-3xl font-bold">
+                {completed}
+              </h2>
+              <p className="text-gray-600">Completed</p>
             </div>
 
           </div>
 
-          {/* Recent Appointments */}
+          {/* Appointment Table */}
+          <div className="bg-white rounded-xl shadow">
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-semibold">
+                My Appointments
+              </h2>
+            </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+            {loading ? (
+              <div className="p-8 text-center">
+                Loading...
+              </div>
+            ) : appointments.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                No appointments found.
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-4 text-left">Patient</th>
+                    <th className="p-4 text-left">Date</th>
+                    <th className="p-4 text-left">Time</th>
+                    <th className="p-4 text-left">Reason</th>
+                    <th className="p-4 text-left">Status</th>
+                  </tr>
+                </thead>
 
-            <h2 className="text-3xl font-bold mb-6">
-              Recent Appointments
-            </h2>
+                <tbody>
+                  {appointments.map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="border-t hover:bg-gray-50"
+                    >
+                      <td className="p-4">
+                        {appointment.patient_name}
+                      </td>
 
-            <div className="space-y-4">
+                      <td className="p-4">
+                        {appointment.appointment_date}
+                      </td>
 
-              {
-                appointments.length > 0
-                  ? appointments
-                      .slice(0, 5)
-                      .map((item) => (
+                      <td className="p-4">
+                        {appointment.appointment_time}
+                      </td>
 
-                        <div
-                          key={item.id}
-                          className="bg-slate-800 rounded-2xl p-5"
+                      <td className="p-4">
+                        {appointment.reason}
+                      </td>
+
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            appointment.status === "Pending"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : appointment.status === "Confirmed"
+                              ? "bg-blue-100 text-blue-700"
+                              : appointment.status === "Completed"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
                         >
-
-                          <h3 className="font-bold text-lg">
-                            {item.patient_name}
-                          </h3>
-
-                          <p className="text-slate-400 mt-1">
-                            {item.appointment_date}
-                          </p>
-
-                          <p className="mt-2 text-cyan-400">
-                            {item.status}
-                          </p>
-
-                        </div>
-
-                      ))
-                  : (
-                    <p className="text-slate-400">
-                      No appointments found
-                    </p>
-                  )
-              }
-
-            </div>
-
+                          {appointment.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
-
         </div>
-
       </div>
-
     </div>
-
-  )
-
+  );
 }
-
-export default Dashboard

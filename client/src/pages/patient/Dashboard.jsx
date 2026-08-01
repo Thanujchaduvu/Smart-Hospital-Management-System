@@ -1,65 +1,156 @@
-import Sidebar from "../../components/Sidebar"
-import Navbar from "../../components/Navbar"
-import DashboardCard from "../../components/DashboardCard"
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-function Dashboard() {
+import Sidebar from "../../components/common/Sidebar";
+import Navbar from "../../components/common/Navbar";
+
+import DashboardCards from "../../components/patient/DashboardCards";
+import QuickActions from "../../components/patient/QuickActions";
+import UpcomingAppointment from "../../components/patient/UpcomingAppointment";
+import PrescriptionWidget from "../../components/patient/PrescriptionWidget";
+import LabReportWidget from "../../components/patient/LabReportWidget";
+import BillingWidget from "../../components/patient/BillingWidget";
+import NotificationWidget from "../../components/patient/NotificationWidget";
+import HealthSummary from "../../components/patient/HealthSummary";
+import RecentActivity from "../../components/patient/RecentActivity";
+import AIFloatingButton from "../../components/ai/AIFloatingButton";
+
+export default function Dashboard() {
+  const token = localStorage.getItem("token");
+
+  const [loading, setLoading] = useState(true);
+
+  const [dashboard, setDashboard] = useState({
+    appointments: [],
+    prescriptions: [],
+    reports: [],
+    bills: [],
+    pharmacyOrders: [],
+    notifications: [],
+  });
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const loadDashboard = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const [
+        appointments,
+        prescriptions,
+        reports,
+        bills,
+      ] = await Promise.all([
+        axios.get(
+          "http://localhost:5000/api/patient/appointments",
+          { headers }
+        ),
+
+        axios.get(
+          "http://localhost:5000/api/patient/prescriptions",
+          { headers }
+        ),
+
+        axios.get(
+          "http://localhost:5000/api/patient/lab-reports",
+          { headers }
+        ),
+
+        axios.get(
+          "http://localhost:5000/api/patient/bills",
+          { headers }
+        ),
+      ]);
+
+      setDashboard({
+        appointments:
+          appointments.data.appointments || [],
+
+        prescriptions:
+          prescriptions.data.prescriptions || [],
+
+        reports:
+          reports.data.reports || [],
+
+        bills:
+          bills.data.bills || [],
+
+        pharmacyOrders: [],
+
+        notifications: [],
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
 
   return (
-
-    <div style={styles.container}>
+    <div className="flex min-h-screen bg-gray-100">
 
       <Sidebar role="patient" />
 
-      <div style={styles.main}>
+      <div className="flex-1">
 
         <Navbar title="Patient Dashboard" />
 
-        <div style={styles.cards}>
+        <div className="p-8">
 
-          <DashboardCard
-            title="Appointments"
-            value="5"
+          <DashboardCards
+            dashboard={dashboard}
+            loading={loading}
           />
 
-          <DashboardCard
-            title="Reports"
-            value="3"
+          <QuickActions />
+
+          <UpcomingAppointment
+            appointments={dashboard.appointments}
           />
 
-          <DashboardCard
-            title="Prescriptions"
-            value="7"
-          />
+          <div className="grid lg:grid-cols-3 gap-6 mt-8">
+
+            <PrescriptionWidget
+              prescriptions={dashboard.prescriptions}
+            />
+
+            <LabReportWidget
+              reports={dashboard.reports}
+            />
+
+            <BillingWidget
+              bills={dashboard.bills}
+            />
+
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6 mt-8">
+
+            <NotificationWidget
+              notifications={dashboard.notifications}
+            />
+
+            <HealthSummary />
+
+          </div>
+
+          <RecentActivity />
 
         </div>
 
       </div>
 
+      <AIFloatingButton />
+
     </div>
-
-  )
-
+  );
 }
-
-const styles = {
-
-  container: {
-    display: "flex",
-    backgroundColor: "#f4f6f9",
-    minHeight: "100vh"
-  },
-
-  main: {
-    flex: 1
-  },
-
-  cards: {
-    display: "flex",
-    gap: "20px",
-    padding: "20px",
-    flexWrap: "wrap"
-  }
-
-}
-
-export default Dashboard

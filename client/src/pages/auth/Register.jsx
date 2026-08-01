@@ -1,185 +1,150 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import API from "../../api/axios"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
-function Register() {
-
-  const navigate = useNavigate()
+const Register = () => {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "patient"
-  })
+    role: "patient",
+  });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  }
-
-  const handleSubmit = async (e) => {
-
-    e.preventDefault()
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
     try {
+      setLoading(true);
 
-      const res = await API.post(
-        "/auth/register",
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
         formData
-      )
+      );
 
-      alert(res.data.message)
+      alert(res.data.message);
 
-      navigate("/")
+      localStorage.setItem("token", res.data.token);
 
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.response?.data?.message ||
+          "Registration Failed"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    catch (err) {
-
-      console.log(err)
-
-      alert("Registration Failed")
-
-    }
-
-  }
+  };
 
   return (
-
-    <div style={styles.container}>
-
-      <div style={styles.card}>
-
-        <h1 style={styles.title}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        background: "#0f172a",
+      }}
+    >
+      <form
+        onSubmit={handleRegister}
+        style={{
+          width: "380px",
+          padding: "30px",
+          background: "#1e293b",
+          borderRadius: "15px",
+          color: "#fff",
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginBottom: 20 }}>
           Create Account
-        </h1>
+        </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          style={styles.form}
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={buttonStyle}
         >
+          {loading ? "Registering..." : "Register"}
+        </button>
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            onChange={handleChange}
-            style={styles.input}
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            onChange={handleChange}
-            style={styles.input}
-          />
-
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            style={styles.input}
-          />
-
-          <button
-            type="submit"
-            style={styles.button}
-          >
-            Register
-          </button>
-
-          <p style={styles.text}>
-
-            Already have an account?
-
-            <Link
-              to="/"
-              style={styles.link}
-            >
-              Login
-            </Link>
-
-          </p>
-
-        </form>
-
-      </div>
-
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: 15,
+          }}
+        >
+          Already have an account?{" "}
+          <Link to="/login">
+            Login
+          </Link>
+        </p>
+      </form>
     </div>
+  );
+};
 
-  )
+const inputStyle = {
+  width: "100%",
+  padding: "12px",
+  marginBottom: "15px",
+  borderRadius: "8px",
+  border: "1px solid #ccc",
+  fontSize: "16px",
+};
 
-}
+const buttonStyle = {
+  width: "100%",
+  padding: "12px",
+  background: "#2563eb",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  fontSize: "16px",
+  cursor: "pointer",
+};
 
-const styles = {
-
-  container: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background:
-      "linear-gradient(135deg,#111827,#312e81,#2563eb)"
-  },
-
-  card: {
-    width: "420px",
-    padding: "40px",
-    borderRadius: "20px",
-    background: "rgba(255,255,255,0.1)",
-    backdropFilter: "blur(15px)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-    color: "white"
-  },
-
-  title: {
-    textAlign: "center",
-    marginBottom: "30px",
-    fontSize: "35px"
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px"
-  },
-
-  input: {
-    padding: "14px",
-    borderRadius: "10px",
-    border: "none",
-    fontSize: "16px"
-  },
-
-  button: {
-    padding: "14px",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#38bdf8",
-    color: "white",
-    fontSize: "18px",
-    cursor: "pointer",
-    fontWeight: "bold"
-  },
-
-  text: {
-    textAlign: "center"
-  },
-
-  link: {
-    color: "#38bdf8",
-    marginLeft: "5px",
-    textDecoration: "none",
-    fontWeight: "bold"
-  }
-
-}
-
-export default Register
+export default Register;

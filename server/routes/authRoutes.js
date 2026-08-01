@@ -1,37 +1,40 @@
-const router = require("express").Router()
+const express = require("express");
 
-const authController = require("../controllers/authController")
+const router = express.Router();
 
 const {
+  register,
+  login,
+  googleLogin,
+  forgotPassword,
+  resetPassword,
   getUsers,
   deleteUser,
-  googleLogin
-} = require(
-  "../controllers/authController"
-)
+} = require("../controllers/authController");
 
-router.get(
-  "/users",
-  getUsers
-)
+// ================= AUTH =================
 
-router.delete(
-  "/users/:id",
-  deleteUser
-)
-router.post(
-  "/register",
-  authController.register
-)
+// Register
+router.post("/register", register);
 
-router.post(
-  "/login",
-  authController.login
-)
+// Login
+router.post("/login", login);
 
-router.post(
-  "/google-login",
-  googleLogin
-)
+// Google Login
+router.post("/google-login", googleLogin);
 
-module.exports = router
+// Forgot Password
+router.post("/forgot-password", forgotPassword);
+
+// Reset Password
+router.post("/reset-password/:token", resetPassword);
+
+// ================= USERS =================
+
+// Get All Users
+router.get("/users", getUsers);
+
+// Delete User
+router.delete("/users/:id", deleteUser);
+
+module.exports = router;
