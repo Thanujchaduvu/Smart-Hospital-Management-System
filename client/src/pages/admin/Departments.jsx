@@ -30,7 +30,7 @@ export default function Departments() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/departments",
+        `${import.meta.env.VITE_API_URL}/api/departments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ export default function Departments() {
         );
       } else {
         await axios.post(
-          "${import.meta.env.VITE_API_URL}/api/departments",
+          `${import.meta.env.VITE_API_URL}/api/departments`,
           { name, description },
           {
             headers: {

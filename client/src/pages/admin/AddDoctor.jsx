@@ -29,7 +29,7 @@ export default function AddDoctor() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/admin/departments",
+        `${import.meta.env.VITE_API_URL}/api/admin/departments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +62,7 @@ export default function AddDoctor() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/doctors",
+        `${import.meta.env.VITE_API_URL}/api/doctors`,
         form,
         {
           headers: {

@@ -33,7 +33,7 @@ export default function PharmacyStaff() {
     try {
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/pharmacy-staff",
+        `${import.meta.env.VITE_API_URL}/api/pharmacy-staff`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ export default function PharmacyStaff() {
 
         await axios.post(
 
-          "${import.meta.env.VITE_API_URL}/api/pharmacy-staff",
+          `${import.meta.env.VITE_API_URL}/api/pharmacy-staff`,
 
           formData,
 

@@ -39,7 +39,7 @@ export default function Pharmacy() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/patient/pharmacy",
+        `${import.meta.env.VITE_API_URL}/api/patient/pharmacy`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

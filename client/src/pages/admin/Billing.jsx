@@ -131,7 +131,7 @@ export default function Billing() {
 const fetchBills = async () => {
   try {
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/billing",
+      `${import.meta.env.VITE_API_URL}/api/billing`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -152,7 +152,7 @@ const fetchBills = async () => {
 const fetchSummary = async () => {
   try {
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/billing/summary",
+      `${import.meta.env.VITE_API_URL}/api/billing/summary`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -173,7 +173,7 @@ const fetchSummary = async () => {
 const fetchRevenue = async () => {
   try {
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/billing/monthly",
+      `${import.meta.env.VITE_API_URL}/api/billing/monthly`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -194,7 +194,7 @@ const fetchRevenue = async () => {
 const fetchAppointments = async () => {
   try {
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/billing/appointments",
+      `${import.meta.env.VITE_API_URL}/api/billing/appointments`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -215,7 +215,7 @@ const fetchAppointments = async () => {
 const createBill = async () => {
   try {
     await axios.post(
-      "${import.meta.env.VITE_API_URL}/api/billing",
+      `${import.meta.env.VITE_API_URL}/api/billing`,
       {
         ...formData,
         amount: totalAmount,

@@ -26,7 +26,7 @@ export default function BookAppointment() {
   const fetchDoctors = async () => {
     try {
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/doctors",
+        `${import.meta.env.VITE_API_URL}/api/doctors`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ export default function BookAppointment() {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/departments",
+        `${import.meta.env.VITE_API_URL}/api/departments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,7 +69,7 @@ export default function BookAppointment() {
 
     try {
       await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/appointments",
+        `${import.meta.env.VITE_API_URL}/api/appointments`,
         formData,
         {
           headers: {

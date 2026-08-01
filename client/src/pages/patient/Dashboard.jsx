@@ -46,22 +46,22 @@ export default function Dashboard() {
         bills,
       ] = await Promise.all([
         axios.get(
-          "${import.meta.env.VITE_API_URL}/api/patient/appointments",
+          `${import.meta.env.VITE_API_URL}/api/patient/appointments`,
           { headers }
         ),
 
         axios.get(
-          "${import.meta.env.VITE_API_URL}/api/patient/prescriptions",
+          `${import.meta.env.VITE_API_URL}/api/patient/prescriptions`,
           { headers }
         ),
 
         axios.get(
-          "${import.meta.env.VITE_API_URL}/api/patient/lab-reports",
+          `${import.meta.env.VITE_API_URL}/api/patient/lab-reports`,
           { headers }
         ),
 
         axios.get(
-          "${import.meta.env.VITE_API_URL}/api/patient/bills",
+          `${import.meta.env.VITE_API_URL}/api/patient/bills`,
           { headers }
         ),
       ]);

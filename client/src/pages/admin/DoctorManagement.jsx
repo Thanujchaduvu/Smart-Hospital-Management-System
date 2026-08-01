@@ -20,7 +20,7 @@ export default function DoctorManagement() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/doctors",
+        `${import.meta.env.VITE_API_URL}/api/doctors`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

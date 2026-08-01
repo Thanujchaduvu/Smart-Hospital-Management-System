@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "${import.meta.env.VITE_API_URL}/api/doctors";
+const API = `${import.meta.env.VITE_API_URL}/api/doctors`;
 
 export const getDoctors = () => axios.get(API);
 

@@ -82,7 +82,7 @@ export default function Reports() {
   const fetchSummary = async () => {
 
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/reports/summary",
+      `${import.meta.env.VITE_API_URL}/api/reports/summary`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ export default function Reports() {
   const fetchStatus = async () => {
 
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/reports/status",
+      `${import.meta.env.VITE_API_URL}/api/reports/status`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ export default function Reports() {
   const fetchDepartmentReport = async () => {
 
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/reports/departments",
+      `${import.meta.env.VITE_API_URL}/api/reports/departments`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -139,7 +139,7 @@ export default function Reports() {
   const fetchMonthlyReport = async () => {
 
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/reports/monthly",
+      `${import.meta.env.VITE_API_URL}/api/reports/monthly`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -158,7 +158,7 @@ export default function Reports() {
   const fetchRecentAppointments = async () => {
 
     const res = await axios.get(
-      "${import.meta.env.VITE_API_URL}/api/reports/recent",
+      `${import.meta.env.VITE_API_URL}/api/reports/recent`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

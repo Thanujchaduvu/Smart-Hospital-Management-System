@@ -32,7 +32,7 @@ export default function LaboratoryStaff() {
     try {
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/laboratory-staff",
+        `${import.meta.env.VITE_API_URL}/api/laboratory-staff`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function LaboratoryStaff() {
 
         await axios.post(
 
-          "${import.meta.env.VITE_API_URL}/api/laboratory-staff",
+          `${import.meta.env.VITE_API_URL}/api/laboratory-staff`,
 
           formData,
 

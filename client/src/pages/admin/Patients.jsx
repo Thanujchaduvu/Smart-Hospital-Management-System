@@ -15,7 +15,7 @@ export default function Patients() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/patients",
+        `${import.meta.env.VITE_API_URL}/api/patients`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
